@@ -24,11 +24,19 @@ class Emprestimo:
 
     @staticmethod
     def realizar_aluguel_bikes(loja, cliente, num_bikes, tipo_aluguel):
+        """
+        Efetua o aluguel das bicicletas pelo Cliente.
+
+        :param loja: Objeto Loja
+        :param cliente: Objeto Cliente
+        :param num_bikes: Quantidade de bicicletas
+        :param tipo_aluguel: Tipo (período) do aluguel
+        """
         data_emprestimo = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
         lista_bikes = []
         for i in range(num_bikes):
             lista_bikes.append(loja.estoque_bikes[i])
-        codigo_do_aluguel = random.randint(1000000, 9999999)
+        codigo_do_aluguel = random.randint(1000, 9999)
         dic_valores = {'cliente': cliente,
                        'loja': loja,
                        'lista_de_bikes': lista_bikes,
@@ -41,16 +49,27 @@ class Emprestimo:
 
     @staticmethod
     def realizar_devolucao_aluguel(codigo, data_devolucao):
+        """
+        Efetua a devolução do aluguel.
+
+        :param codigo: Código do aluguel
+        :param data_devolucao: Data de devolução
+        """
         emprestimo = Emprestimo.emprestimos[codigo]
         valor, periodo = Emprestimo.calcular_valor_aluguel(emprestimo, data_devolucao)
         Emprestimo.emprestimos.pop(codigo)
         emprestimo['cliente'].alugueis.remove(codigo)
-        emprestimo['loja'].retirar_bikes_alugadas(emprestimo['lista_de_bikes'])
-        emprestimo['loja'].historico_alugueis.update({codigo: {'valor_recebido': valor,
-                                                               'data_de_devolucao': data_devolucao}})
+        emprestimo['loja'].retirar_bikes_alugadas(codigo, data_devolucao, valor, emprestimo['lista_de_bikes'])
 
     @staticmethod
     def calcular_valor_aluguel(emprestimo, data_devolucao):
+        """
+        Cálculo do valor a ser pago pelo aluguel das bicicletas.
+
+        :param emprestimo: Objeto Emprestimo
+        :param data_devolucao: Data de devolução
+        :return: Valor calculado e o período que ficou alugado.
+        """
         data_emprestimo = datetime.strptime(emprestimo['data_do_emprestimo'], "%d/%m/%Y %H:%M:%S")
         data_devolucao = datetime.strptime(data_devolucao, "%d/%m/%Y %H:%M:%S")
         diferenca_em_segundos = (data_devolucao - data_emprestimo).total_seconds()
@@ -69,20 +88,23 @@ class Emprestimo:
         semana_em_segundos = 336.0
 
         if tipo_aluguel == 1:  # por dia
-            quantidade_aluguel = (diferenca_em_segundos // hora_em_segundos) + (1 if diferenca_em_segundos % hora_em_segundos else 0)
+            quantidade_aluguel = (diferenca_em_segundos // hora_em_segundos) \
+                                 + (1 if diferenca_em_segundos % hora_em_segundos else 0)
             periodo_cobrado = f'{quantidade_aluguel:.0f} hora(s)'
         elif tipo_aluguel == 2:
-            quantidade_aluguel = (diferenca_em_segundos // dia_em_segundos) + (1 if diferenca_em_segundos % dia_em_segundos else 0)
+            quantidade_aluguel = (diferenca_em_segundos // dia_em_segundos) \
+                                 + (1 if diferenca_em_segundos % dia_em_segundos else 0)
             periodo_cobrado = f'{quantidade_aluguel:.0f} dia(s)'
         else:
-            quantidade_aluguel = (diferenca_em_segundos // semana_em_segundos) + (1 if diferenca_em_segundos % semana_em_segundos else 0)
+            quantidade_aluguel = (diferenca_em_segundos // semana_em_segundos) \
+                                 + (1 if diferenca_em_segundos % semana_em_segundos else 0)
             periodo_cobrado = f'{quantidade_aluguel:.0f} semana(s)'
 
         # valor = 0
         if numero_bikes_alugadas >= 3:
-            valor = numero_bikes_alugadas * quantidade_aluguel * valor_unitario * ((100 - Emprestimo.VALORES['DESCONTO_PROMOCAO']) / 100)
+            valor = numero_bikes_alugadas * quantidade_aluguel * valor_unitario \
+                    * ((100 - Emprestimo.VALORES['DESCONTO_PROMOCAO']) / 100)
         else:
             valor = numero_bikes_alugadas * quantidade_aluguel * valor_unitario
 
         return valor, periodo_cobrado
-

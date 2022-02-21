@@ -1,13 +1,10 @@
-from bicicleta import Bicicleta
 from cliente import Cliente
 from loja import Loja
-from emprestimo import Emprestimo
 from menus import Menu
-from excecoes import Excecao
 
 from apoio import Comando
 
-# Para criar instâncias de lojas e clientes descomente as linhas abaixo
+# Para não criar instâncias de lojas e clientes comente as duas linhas abaixo
 Loja.inicializar_lojas()
 Cliente.inicializar_clientes()
 
@@ -18,7 +15,7 @@ print('*'*77)
 opcao = 1
 while opcao != 0:
     Menu.lojista_ou_cliente()
-    opcao = Comando.digitar_inteiro(3)
+    opcao = Comando.digitar_inteiro(4)
 
     # Entrou no perfil de LOGISTA
     if opcao == 1:
@@ -53,7 +50,7 @@ while opcao != 0:
             elif opcao_lojista == 3:
                 loja.adquirir_bikes()
             elif opcao_lojista == 4:
-                print('opção 4')
+                loja.devolucao_cliente()
 
     # Entrou no perfil de CLIENTE
     elif opcao == 2:
@@ -68,11 +65,13 @@ while opcao != 0:
                 nome_cliente = Comando.digitar_texto()
                 if not Cliente.resgatar_cliente(nome_cliente):
                     print(f'\nO cliente {nome_cliente} não existe.')
-                    criar_cliente = input('Deseja criar um cadastro? (S para Sim / Qualquer outro valor para Não) ').upper()
+                    criar_cliente = input('Deseja criar um cadastro? '
+                                          '(S para Sim / Qualquer outro valor para Não) ').upper()
                     if criar_cliente == 'S':
                         print('Digite seu telefone.')
                         telefone = Comando.digitar_texto()
-                        cliente = Cliente(nome_cliente, telefone)  # Cria o cliente. O nome dele será usado para o próximo menu.
+                        # Cria o cliente. O nome dele será usado para o próximo menu.
+                        cliente = Cliente(nome_cliente, telefone)
                         print(f'\nCadastro do cliente {nome_cliente} criado com sucesso.\n')
                         Comando.imprimir_divisor('_', 35)
                     else:
@@ -90,18 +89,8 @@ while opcao != 0:
             elif opcao_cliente == 3:
                 cliente.devolver_bikes()
     elif opcao == 3:
-        print(Emprestimo.emprestimos)
-
+        Loja.visualizar_lojas()
+    elif opcao == 4:
+        Cliente.visualizar_clientes()
 
 print('\n\n+++ PROGRAMA FINALIZADO +++')
-
-# dic = {'eita': (345, 'sdf'), 'chave': (345654)}
-# print(dic)
-# print(dic['eita'])
-#
-# valor = 999
-# teste = list(dic['eita'])
-# teste.append('novo valor')
-# teste = tuple(teste)
-# dic.update({valor: teste})
-# print(dic)
