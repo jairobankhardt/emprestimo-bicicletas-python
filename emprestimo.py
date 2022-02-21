@@ -100,7 +100,6 @@ class Emprestimo:
                                  + (1 if diferenca_em_segundos % semana_em_segundos else 0)
             periodo_cobrado = f'{quantidade_aluguel:.0f} semana(s)'
 
-        # valor = 0
         if numero_bikes_alugadas >= 3:
             valor = numero_bikes_alugadas * quantidade_aluguel * valor_unitario \
                     * ((100 - Emprestimo.VALORES['DESCONTO_PROMOCAO']) / 100)

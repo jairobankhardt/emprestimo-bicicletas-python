@@ -101,6 +101,7 @@ class Cliente:
             # o usuário pode demorar para fazer suas escolhas e o tempo de espera pode alterar o valor do aluguel.
             # Então considero o momento em que o usuário entra na opção de devolução
             # e não quando efetivamente realiza a devolução.
+            # Assim garanto que o valor que foi exibido na tela para o usuário será o valor cobrado.
             data_devolucao = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
             for cod in alugueis:
                 emprestimo = Emprestimo.emprestimos[cod]
